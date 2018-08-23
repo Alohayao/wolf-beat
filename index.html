@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+		<style>
+			* {
+				padding: 0;
+				margin: 0;
+			}
+			
+			.container {
+				background: url(img/bg/game_bg.jpg);
+				width: 320px;
+				height: 480px;
+				margin: 10px auto;
+				position: relative;
+			}
+			
+			.score {
+				color: white;
+				font-family: "微软雅黑";
+				font-size: 25px;
+				position: absolute;
+				left: 60px;
+				top: 5px;
+			}
+			
+			.progress {
+				background: url(img/bg/progress.png);
+				width: 180px;
+				height: 16px;
+				position: absolute;
+				left: 63px;
+				top: 66px;
+			}
+			
+			.rule {
+				width: 100%;
+				height: 20px;
+				text-align: center;
+				position: absolute;
+				top: 480px;
+				background: #CCCCCC;
+				line-height: 20px;
+			}
+			
+			.rules {
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				padding-top: 100px;
+				box-sizing: border-box;
+				color: white;
+				display: none;
+			}
+			
+			.rules>p {
+				line-height: 40px;
+				text-align: center;
+			}
+			
+			.start,
+			.restart {
+				position: absolute;
+				font: "微软雅黑";
+				font-size: 20px;
+				width: 160px;
+				height: 40px;
+				top: 300px;
+				left: 50%;
+				text-align: center;
+				margin-left: -80px;
+				background: orangered;
+				line-height: 40px;
+				border-radius: 20px;
+				color: white;
+				border: none;
+			}
+			
+			.close {
+				color: red;
+			}
+			
+			.gameOver {
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				padding-top: 200px;
+				box-sizing: border-box;
+				display: none;
+			}
+			
+			.gameOver>h1 {
+				text-align: center;
+				color: #ff4500;
+				text-shadow: 3px 3px white;
+				font-size: 40px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="score">
+				0
+			</div>
+			<div class="progress">
+
+			</div>
+			<button class="start">
+				开始游戏
+			</button>
+			<div class="rule">
+				游戏规则
+			</div>
+			<div class="rules">
+				<p>游戏规则</p>
+				<p>游戏规则</p>
+				<p>游戏规则</p>
+				<p>游戏规则</p>
+				<p class="close">[关闭]</p>
+			</div>
+			<div class="gameOver">
+				<h1 class="over">GAME OVER</h1>
+				<button class="restart">重新开始</button>
+			</div>
+		</div>
+	</body>
+
+</html>
+<script>
+	//点击游戏规则
+	$('.rule').click(function() {
+		$(this).fadeOut(100);
+		$('.start').fadeOut(100);
+		$('.rules').fadeIn(100);
+	})
+
+	//点击游戏规则的关闭按钮
+	$('.rules>.close').click(function() {
+		$(this).parent().fadeOut(100);
+	})
+
+	//点击开始游戏按钮
+	$('.start').click(function() {
+		$('.rule').fadeOut(100);
+		$(this).fadeOut(100);
+		//执行进度条宽度动画
+		progressAnimation();
+		//执行灰太狼和小灰灰动画
+		wolfImgAnimation();
+	})
+
+	//点击重新开始按钮
+	$('.restart').click(function() {
+		$(this).parent().fadeOut(100);
+		//执行进度条动画
+		progressAnimation();
+		//执行灰太狼和小灰灰动画
+		wolfImgAnimation();
+		//重新开始分数归零
+		$('.score').text(0);
+	})
+
+	//点击灰太狼得分
+	function wolfTap($img) {
+		$img.one('click', function() {
+			//点击图片后修改当前图片下标
+			arrIndex = 6;
+			//修改结束图片的下标
+			arrIndexEnd = 10;
+			//通过图片的名称判断敲打的是灰太狼还是小灰灰
+			var src = $img.attr('src');
+			if(src.includes('h')) {
+				$('.score').text(Number($('.score').text()) + 10);
+				//切换图片
+				
+			} else {
+				$('.score').text(Number($('.score').text()) - 10);
+			}
+		})
+	}
+
+	//进度条动画函数
+	function progressAnimation() {
+		$('.progress').css('width', '180px');
+		$('.progress').animate({
+			width: 0
+		}, 10000, function() {
+			//游戏时间结束后淡入结束页面
+			$('.gameOver').fadeIn(100);
+			//关闭图片切换计时器
+			clearInterval(t);
+			//删除图片
+			$('.wolf').remove();
+		})
+	}
+
+	//添加灰太狼和小灰灰的图片
+	function wolfImgAnimation() {
+		//创建一个img元素
+		var $img = $("<img class='wolf'/>");
+		$('.container').append($img);
+		// 图片出现的位置
+		wolfPos($img);
+		//执行图片src切换函数
+		wolfSrcChange($img);
+		//给图片添加点击事件
+		wolfTap($img);
+
+	}
+
+	//图片src切换函数
+	function wolfSrcChange($img) {
+		//灰太狼图片
+		window.wolf_h = [
+			'img/wolf-h/h0.png',
+			'img/wolf-h/h1.png',
+			'img/wolf-h/h2.png',
+			'img/wolf-h/h3.png',
+			'img/wolf-h/h4.png',
+			'img/wolf-h/h5.png',
+			'img/wolf-h/h6.png',
+			'img/wolf-h/h7.png',
+			'img/wolf-h/h8.png',
+			'img/wolf-h/h9.png'
+		];
+		//小灰灰图片
+		window.wolf_x = [
+			'img/wolf-x/x0.png',
+			'img/wolf-x/x1.png',
+			'img/wolf-x/x2.png',
+			'img/wolf-x/x3.png',
+			'img/wolf-x/x4.png',
+			'img/wolf-x/x5.png',
+			'img/wolf-x/x6.png',
+			'img/wolf-x/x7.png',
+			'img/wolf-x/x8.png',
+			'img/wolf-x/x9.png'
+		];
+		window.arrIndex = 0;
+		window.arrIndexEnd = 6;
+		var wolf = Math.round(Math.random()) ? wolf_h : wolf_x;
+		window.t = setInterval(function() {
+			$img.attr('src', wolf[arrIndex]);
+			arrIndex++;
+			if(arrIndex > arrIndexEnd) {
+				clearInterval(t);
+				$img.remove();
+				wolfImgAnimation();
+			}
+		}, 200);
+	}
+
+	//图片位置切换
+	function wolfPos($img) {
+		var arrPos = [{
+				left: '100px',
+				top: '115px'
+			},
+			{
+				left: '20px',
+				top: '160px'
+			},
+			{
+				left: '190px',
+				top: '142px'
+			},
+			{
+				left: '105px',
+				top: '193px'
+			},
+			{
+				left: '19px',
+				top: '221px'
+			},
+			{
+				left: '202px',
+				top: '212px'
+			},
+			{
+				left: '120px',
+				top: '275px'
+			},
+			{
+				left: '30px',
+				top: '295px'
+			},
+			{
+				left: '209px',
+				top: '297px'
+			}
+		];
+
+		//0~8的随机值
+		var posIndex = Math.floor(Math.random() * 9);
+		//给图片确定出现的位置
+		$img.css({
+			position: 'absolute',
+			left: arrPos[posIndex].left,
+			top: arrPos[posIndex].top
+		});
+	}
+</script>
